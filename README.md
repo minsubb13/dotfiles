@@ -2,12 +2,12 @@
 
 Personal development environment configuration for macOS.
 
-## Contents
+# Features
 
-- **git**: git configuration and global gitignore
-- **vim**: vim configuration with plugin support
-- **zsh**: zsh configuration
-- **p10k.zsh**: powerlevel10k theme configuration
+- **Shell**: Zsh with Oh My Zsh
+- **Theme**: Powerlevel10k
+- **Plugin Manager**: Antigen
+- **Tools**: autojump, fzf, bat
 
 ## Prerequisites
 
@@ -32,4 +32,12 @@ Before installation, ensure you have the following installed:
     ./install.sh
     ```
 
+## What's included
+
+- `zshrc`: Zsh configuration
+- `p10k.zsh`: Powerlevel10k theme configuration
+- `gitconfig`: Git configuration
+- `gitignore`: Global gitignore
+- `vimrc`: Vim configuration
+- `install.sh`: Automated installation script
 
