@@ -29,7 +29,7 @@ Session.vim
 !.vscode/extensions.json
 .history/
 
-# JetBrains (PyCharm, IntelliJ, GoLand 등)
+# JetBrains
 .idea/
 *.iml
 *.iws
