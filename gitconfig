@@ -7,7 +7,7 @@
   ui = auto
 [core]
   editor = vim
-	excludesFile = ~/.gitignore
+  excludesFile = ~/.gitignore
 [alias]
   co = checkout
   cob = checkout -b
