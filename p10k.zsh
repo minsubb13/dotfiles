@@ -1,0 +1,1 @@
+/Users/minseopchoi/.p10k.zsh
