@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal development environment configuration for macOS (and Linux).
+Personal development environment configuration for macOS.
 
 ## Contents
 
