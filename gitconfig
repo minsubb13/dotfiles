@@ -1,1 +1,16 @@
-/Users/minseopchoi/.gitconfig
+[user]
+  name = Minseop Choi
+  email = minsubb13@gmail.com
+[init]
+  defaultBranch = main
+[color]
+  ui = auto
+[core]
+  editor = vim
+	excludesFile = ~/.gitignore
+[alias]
+  co = checkout
+  cob = checkout -b
+  lg = log --color --graph --pretty=format:'%C(yellow)%ci%Creset %Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ai) %C(bold blue)%ae%Creset' --abbrev-commit
+  prev = reset --hard HEAD^
+  s = status
