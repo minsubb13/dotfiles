@@ -89,15 +89,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git
-  history
-  dirhistory
-  autojump
-  fzf
-)
-
-source $ZSH/oh-my-zsh.sh
+# plugins are managed by antigen below
 
 ### User configuration
 
@@ -139,6 +131,10 @@ source $HOME/.antigen.zsh
 antigen use oh-my-zsh
 antigen theme powerlevel10k/powerlevel10k
 antigen bundle git
+antigen bundle history
+antigen bundle dirhistory
+antigen bundle autojump
+antigen bundle fzf
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-syntax-highlighting
 if [[ "$OSTYPE" == "darwin"* ]]; then

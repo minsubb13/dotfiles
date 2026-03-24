@@ -19,7 +19,7 @@ fi
 
 # Install plugins for zsh
 echo "Installing plugins for zsh..."
-brew install autojump bat fzf
+brew install autojump bat fzf tmux
 
 # Install antigen for zsh
 if [ ! -f "$HOME/.antigen.zsh" ]; then
@@ -38,5 +38,6 @@ ln -sfv "$DOTFILES_DIR/vimrc" "$HOME/.vimrc"
 ln -sfv "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
 ln -sfv "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 ln -sfv "$DOTFILES_DIR/gitignore" "$HOME/.gitignore"
+ln -sfv "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf"
 
 echo "Setup complete!"
