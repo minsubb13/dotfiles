@@ -27,7 +27,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# ZSH_THEME is managed by antigen
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -122,14 +122,10 @@ export LANG=en_US.UTF-8
 
 # User configuration
 
-# powerlevel10k theme
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 # antigen
 source $HOME/.antigen.zsh
 antigen use oh-my-zsh
-antigen theme powerlevel10k/powerlevel10k
+antigen theme romkatv/powerlevel10k
 antigen bundle git
 antigen bundle history
 antigen bundle dirhistory
@@ -142,7 +138,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 antigen apply
 
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
-source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+# powerlevel10k theme
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# alias
+alias brewu='brew update && brew upgrade'
+alias cld='claude --dangerously-skip-permissions'
