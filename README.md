@@ -39,6 +39,7 @@ Before installation, ensure you have the following installed:
 - `gitconfig`: Git configuration
 - `gitignore`: Global gitignore
 - `vimrc`: Vim configuration
+- `tmux.conf`: Tmux configuration
 - `install.sh`: Automated installation script
 - `claude/`: Claude Code configuration (see below)
 

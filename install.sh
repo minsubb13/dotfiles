@@ -22,14 +22,14 @@ if [ "$OS" = "Darwin" ]; then
 
     # Install plugins/tools via Brew
     echo "Installing tools via Homebrew..."
-    brew install autojump bat fzf git vim zsh curl
+    brew install autojump bat fzf git vim zsh curl tmux
 
 elif [ "$OS" = "Linux" ]; then
     echo "Linux (Ubuntu/Debian) detected."
 
     # Update and Install packages via apt
     sudo apt-get update
-    sudo apt-get install -y zsh git vim curl autojump bat fzf fonts-powerline
+    sudo apt-get install -y zsh git vim curl autojump bat fzf fonts-powerline tmux
 
     # Handle 'bat' command name (Ubuntu installs it as 'batcat')
     mkdir -p ~/.local/bin
@@ -84,6 +84,7 @@ ln -sfv "$DOTFILES_DIR/vimrc" "$HOME/.vimrc"
 ln -sfv "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
 ln -sfv "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 ln -sfv "$DOTFILES_DIR/gitignore" "$HOME/.gitignore"
+ln -sfv "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf"
 
 # ------------------------------------------------------------------------------
 # 3. Claude Code Configuration
