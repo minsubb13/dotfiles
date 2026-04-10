@@ -1,0 +1,7 @@
+{
+  "enabledMcpjsonServers": [
+    "notion",
+    "omc-tools"
+  ],
+  "enableAllProjectMcpServers": true
+}

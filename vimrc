@@ -32,8 +32,7 @@ set encoding=utf-8
 "English spelling checker.
 setlocal spelllang=en_us
 
-colorscheme jellybeans
-let g:airline_theme='jellybeans'
+silent! colorscheme jellybeans
 
 set autowrite
 set number " show line numbers

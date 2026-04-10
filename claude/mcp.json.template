@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "notion": {
+      "command": "$NPX",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "$NOTION_TOKEN"
+      }
+    },
+    "omc-tools": {
+      "command": "node",
+      "args": ["$HOME/.claude/plugins/marketplaces/omc/bridge/mcp-server.cjs"],
+      "env": {
+        "CLAUDE_PLUGIN_ROOT": "$HOME/.claude/plugins/marketplaces/omc"
+      }
+    }
+  }
+}
