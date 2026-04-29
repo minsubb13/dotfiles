@@ -80,3 +80,11 @@ alias cld='claude --dangerously-skip-permissions'
 # Machine-local settings: source ~/.zshrc.local if it exists
 # ------------------------------------------------------------------------------
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+
+# bun completions
+[ -s "/home/remote3/.bun/_bun" ] && source "/home/remote3/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
