@@ -74,7 +74,6 @@ elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
 fi
 
 alias home='cd $HOME'
-alias cld='claude --dangerously-skip-permissions'
 
 # ------------------------------------------------------------------------------
 # Machine-local settings: source ~/.zshrc.local if it exists
