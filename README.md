@@ -41,51 +41,68 @@ Before installation, ensure you have the following installed:
 - `vimrc`: Vim configuration
 - `tmux.conf`: Tmux configuration
 - `install.sh`: Automated installation script
-- `claude/`: Claude Code configuration (see below)
+- `claude-snapshot/`: Claude workflow snapshot — see "Claude Workflow Snapshot" below (only present on the `claude-setting` branch)
+- `sync-claude.sh`: One-way snapshot updater (only present on the `claude-setting` branch)
 
-## Claude Code
+---
 
-`install.sh`를 실행하면 Claude Code 설정도 함께 적용됩니다.
+## Claude Workflow Snapshot (branch: `claude-setting`)
 
-### 포함 항목
+This branch holds a one-way snapshot of the local Claude Code workflow assets:
+`~/.claude/{CLAUDE.md, settings.json, agents/, hooks/, skills/}` and
+`~/dev/.claude/{CLAUDE.md, codex-qa-prompt.xml}`.
 
-| 파일 | 용도 | 설치 방식 |
-|------|------|-----------|
-| `claude/CLAUDE.md` | 글로벌 지시사항 (코드 스타일, 커밋 규칙 등) | symlink |
-| `claude/settings.json.template` | 플러그인, 마켓플레이스, HUD 설정 | 템플릿 -> 생성 |
-| `claude/settings.local.json` | MCP 서버 승인 목록 | symlink |
-| `claude/mcp.json.template` | MCP 서버 설정 (Notion 등) | 템플릿 -> 생성 |
-| `claude/agents/` | 커스텀 에이전트 (tracer, architect, scientist, security-reviewer) | symlink |
-| `claude/skills/` | 커스텀 스킬 (docs-summary) | symlink |
-| `claude/plugins/claude-hud/config.json` | HUD 표시 설정 | symlink |
+**The dotfiles repo is a snapshot store, not a sync target.** The local install
+is never touched by anything in this branch. Symlinks are not created.
 
-### 새 머신에서 설치
+### Update the snapshot (after local workflow edits)
 
 ```bash
-# 1. 레포 클론 및 설치 (NOTION_TOKEN은 환경변수로 주입)
-git clone https://github.com/minsubb13/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-NOTION_TOKEN=ntn_xxxxx bash install.sh
-
-# 2. Claude Code 인증
-claude login
-
-# 3. Claude Code 시작 - 플러그인은 마켓플레이스에서 자동 설치됨
-claude
+~/dotfiles/sync-claude.sh
+cd ~/dotfiles && git diff           # review
+git add -A && git commit -m "..."   # commit on claude-setting
+git push
 ```
 
-### 템플릿 변수
+### Apply to a new machine
 
-`settings.json.template`과 `mcp.json.template`에는 머신별 경로 플레이스홀더가 있으며, `install.sh`가 자동으로 치환합니다.
+1. Clone & checkout
+   ```bash
+   git clone https://github.com/minsubb13/dotfiles.git ~/dotfiles
+   cd ~/dotfiles && git checkout claude-setting
+   ```
 
-| 변수 | 설명 | 감지 방법 |
-|------|------|-----------|
-| `$RUNTIME` | node 또는 bun 절대 경로 | `command -v bun \|\| command -v node` |
-| `$NPX` | npx 절대 경로 | node 경로에서 유도 |
-| `$HOME` | 홈 디렉토리 | 환경변수 |
-| `$NOTION_TOKEN` | Notion API 토큰 | 환경변수로 주입 |
+2. Ask the local Claude Code to apply the snapshot:
 
-### 설정 수정 후
+   > Read `~/dotfiles/claude-snapshot/`. Following the "Machine-dependent
+   > fields" table in this README, substitute the machine-dependent parts
+   > of `settings.json`, `hooks/*.sh`, and `dev-claude/CLAUDE.md` to fit
+   > this machine (NVM path, username, projects hash). Apply to
+   > `~/.claude/` and `~/dev/.claude/`. Back up any existing files as
+   > `<file>.bak.YYYYMMDD`.
 
-symlink된 파일(CLAUDE.md, agents/ 등)은 dotfiles 레포에서 직접 수정 -> commit -> push하면 됩니다. 생성된 파일(settings.json, .mcp.json)은 템플릿을 수정 후 `install.sh`를 다시 실행합니다.
+3. Verify after Claude Code restart:
+   - SessionStart hook surfaces workflow state (Codex QA count, last session-log)
+   - statusLine renders correctly
+   - PostToolUse hook appends to `~/.claude/projects/<hash>/workflow-metrics/codex-calls.log` after a `codex:codex-rescue` Agent call
 
+### Machine-dependent fields
+
+When applying the snapshot to a new machine, these are the only fields that
+need to change. Everything else is portable.
+
+| File / JSON path | Snapshot value (example) | New-machine substitute |
+|---|---|---|
+| `claude/settings.json` → `statusLine.command` (node path) | `/home/remote3/.nvm/versions/node/v24.13.1/bin/node` | `command -v node` 결과 또는 `~/.nvm/versions/node/<latest>/bin/node` |
+| `claude/settings.json` → `hooks.SessionStart[0].hooks[0].command` | `/home/remote3/.claude/hooks/session-start-workflow-status.sh` | `$HOME/.claude/hooks/session-start-workflow-status.sh` |
+| `claude/settings.json` → `hooks.Stop[0].hooks[0].command` | `/home/remote3/.claude/hooks/notify-stop.sh` | `$HOME/.claude/hooks/notify-stop.sh` |
+| `claude/settings.json` → `hooks.PostToolUse[1].hooks[0].command` (hash 부분) | `~/.claude/projects/-home-remote3-dev/workflow-metrics/codex-calls.log` | 새 머신의 `~/dev` 절대경로를 hash한 디렉토리. Claude Code 컨벤션: `/`를 `-`로 치환 (예: `-home-<USERNAME>-dev`) |
+| `dev-claude/CLAUDE.md` 본문의 hash 3군데 (line 70, 93, 100 부근) | `~/.claude/projects/-home-remote3-dev/...` | 위와 동일한 새 hash로 substitute |
+
+### What is intentionally NOT in the snapshot
+
+- `~/.claude/projects/<hash>/memory/` — auto memory. Conflict risk in two-machine setups.
+- `~/.claude/projects/<hash>/workflow-metrics/` — per-machine accumulation.
+- `~/dev/<project>/CLAUDE.md` — already lives in each project's git repo.
+- `~/.claude/settings.local.json`, `~/dev/.claude/settings.local.json` — machine-specific MCP enablement.
+- Symlinks. The local install is never linked to this repo.
