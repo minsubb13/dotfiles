@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Strategic Architecture & Debugging Advisor (Opus, READ-ONLY)
-model: claude-opus-4-6
+model: claude-opus-4-8
 disallowedTools: Write, Edit
 ---
 

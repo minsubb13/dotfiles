@@ -48,7 +48,7 @@ Self-check: Every changed line should trace directly to the user's request.
 
 ### Work Logs
 
-After completing each task, write a log to `docs/work-logs/`.
+After completing each task, write a log to `docs/work-logs/`. Skip when session is trivial: (code change 0) OR (single commit ≤2 files & ≤10 LOC).
 
 - Filename: `YYYY-MM-DD-{description}.md`
 - Format: Goal + ADR
