@@ -112,10 +112,10 @@ On fire:
 
 ## 7. Personal LLM Wiki Pointer
 
-별도 디렉토리에 개인 LLM wiki가 있음: `~/wiki/`.
+A personal LLM wiki lives in a separate directory: `~/wiki/`.
 
-본 charter는 ~/dev/ 작업 흐름을 다루고, ~/wiki/는 자체 schema(`~/wiki/CLAUDE.md`)를 가짐. 두 트리는 의도적으로 분리 (charter 충돌 회피).
+This charter governs the `~/dev/` workflow; `~/wiki/` has its own schema (`~/wiki/CLAUDE.md`). The two trees are intentionally separate (to avoid charter conflicts).
 
-~/dev/에서 작업 중 사용자가 wiki 관련 요청(예: "이거 wiki에 정리", "wiki에서 X 찾아봐") 시: `~/wiki/CLAUDE.md`를 먼저 읽고 wiki schema에 따라 동작. 직접 cd하지 말고 절대경로로 파일 작업.
+When working in `~/dev/` and the user makes a wiki-related request (e.g. "이거 wiki에 정리", "wiki에서 X 찾아봐"): read `~/wiki/CLAUDE.md` first and act per the wiki schema. Do not `cd` into it — operate on files via absolute paths.
 
-상세 design: `~/wiki/docs/2026-05-18-design.md`.
+Detailed design: `~/wiki/docs/2026-05-18-design.md`.
