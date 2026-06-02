@@ -26,13 +26,14 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 ### Plan
 - `superpowers:brainstorming` (if design space open) → `superpowers:writing-plans`.
 - Save to `docs/superpowers/plans/YYYY-MM-DD-<feature>.md` (project) or `~/dev/plans/YYYY-MM-DD-<topic>.md` (cross-project meta-work).
+- Small scope (per §1): plan doc not required. Design intent goes in spec or commit/PR prose.
 - On save: propose scale → user confirms → advisor ① (medium/large) → propose Codex QA (medium/large) → user approves → freeze.
 
 ### Execute
 - `superpowers:subagent-driven-development` default. `superpowers:executing-plans` for inline.
 - `using-git-worktrees` for isolation when touching active branches.
-- Per task: implementer → spec reviewer → quality reviewer (fresh subagents).
-- BLOCKED: `superpowers:systematic-debugging` → (multi-hypothesis) tracer subroutine → advisor ③ → user.
+- Per task: implementer → combined reviewer (fresh subagent — spec compliance + code quality in one pass).
+- BLOCKED: `superpowers:systematic-debugging` → (multi-hypothesis) tracer subroutine → user.
 
 ### Review
 - `superpowers:requesting-code-review` (final reviewer).
@@ -52,7 +53,6 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 |---|---|---|---|---|---|
 | advisor ① | After Plan write, before Plan freeze | — | ✓ | ✓ | "Does the plan solve the stated goal?" |
 | advisor ② | After final reviewer, before Codex QA | — | ✓ | ✓ | "Does implementation match intent?" |
-| advisor ③ | Before escalating BLOCKED implementer | ✓ | ✓ | ✓ | Classify: missing context vs. judgment call |
 | Codex QA | After advisor ② | — | ✓ | ✓ | SECURITY / HIDDEN_ASSUMPTION / ARCHITECTURE / BLIND_SPOT only |
 
 **Codex role boundary (stated in prompt):** The four prior reviewers already covered spec compliance, style, merge readiness, and intent alignment. Codex focuses only on what they miss.
@@ -64,6 +64,8 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 > "Skipping Codex QA: below scope gate (small: {file count}, {LOC}). Request explicitly if needed."
 
 **Conflict resolution:** If advisor conflicts with first-hand evidence, push back with evidence or make a reconcile call. If advisor conflicts with user intent, surface to user immediately — never decide autonomously.
+
+**Response handling for user:** When advisor or Codex returns findings that disagree with prior direction or propose significant changes, unpack each finding for the user before deciding. Required: list each point; translate agent jargon to user-accessible terms; connect to concrete examples from the user's transcript / work-logs / prior incidents; surface what the finding implies for the user's profile (experience, team, domain). Agent-to-agent summary is insufficient — user must understand the reasoning, not just the conclusion.
 
 ## 4. Session end logging
 
@@ -78,7 +80,7 @@ Before ending any session with plan writing, implementation, or review work, app
 - Notes: (anything notable)
 ```
 
-Trivial sessions (Q&A only, no code work): skip silently.
+Trivial sessions: skip silently. Trivial = (code change 0) AND (advisor 0) AND (codex 0) AND (no external system writes).
 
 ## 5. Hook boundary (Guard F)
 
@@ -101,3 +103,19 @@ On fire:
 - Archive codex-calls.log as `codex-calls.YYYY-MM-DD.log.archive` and create an empty new log.
 
 **Do not** read metrics docs during normal work — only when the trigger fires.
+
+**Carry-forward to next re-evaluation (proposed 2026-05-18, deferred):**
+
+- spec-primary workflow (plan-prose) — re-examine with cycle 2 data on which artifact the user actually re-opens during multi-session work (spec / plan / work-log).
+- C2 verbatim/mechanical task reviewer skip — re-examine with cycle 2 data on per-task review signal capture and classification accuracy.
+- Option-X maturity dimension — re-examine at cycle 3-4 once self-assessment vs guard-output calibration evidence exists.
+
+## 7. Personal LLM Wiki Pointer
+
+별도 디렉토리에 개인 LLM wiki가 있음: `~/wiki/`.
+
+본 charter는 ~/dev/ 작업 흐름을 다루고, ~/wiki/는 자체 schema(`~/wiki/CLAUDE.md`)를 가짐. 두 트리는 의도적으로 분리 (charter 충돌 회피).
+
+~/dev/에서 작업 중 사용자가 wiki 관련 요청(예: "이거 wiki에 정리", "wiki에서 X 찾아봐") 시: `~/wiki/CLAUDE.md`를 먼저 읽고 wiki schema에 따라 동작. 직접 cd하지 말고 절대경로로 파일 작업.
+
+상세 design: `~/wiki/docs/2026-05-18-design.md`.
