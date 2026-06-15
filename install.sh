@@ -47,7 +47,7 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 2. Oh My Zsh, Plugins & Symlinks
+# 2. Oh My Zsh, Plugins & Dotfiles
 # ------------------------------------------------------------------------------
 
 # Install Oh My Zsh (--unattended prevents shell switch mid-script)

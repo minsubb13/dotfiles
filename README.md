@@ -6,7 +6,6 @@ Personal development environment configuration for macOS and Linux.
 
 - **Shell**: Zsh with Oh My Zsh
 - **Theme**: Powerlevel10k
-- **Plugin Manager**: Antigen
 - **Tools**: autojump, fzf, bat
 
 ## Prerequisites
