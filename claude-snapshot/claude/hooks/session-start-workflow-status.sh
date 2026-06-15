@@ -3,6 +3,14 @@
 # trigger, last session-log entry date) as additionalContext at session start.
 set -euo pipefail
 
+# Only fire for sessions under ~/dev (charter zone); silent elsewhere.
+INPUT=$(cat || true)
+CWD=$(jq -r '.cwd // empty' <<<"$INPUT" 2>/dev/null || true)
+case "$CWD" in
+  "$HOME/dev"|"$HOME/dev"/*) ;;
+  *) exit 0 ;;
+esac
+
 METRICS="$HOME/.claude/projects/-home-remote3-dev/workflow-metrics"
 CODEX_LOG="$METRICS/codex-calls.log"
 SESSION_LOG="$METRICS/session-log.md"

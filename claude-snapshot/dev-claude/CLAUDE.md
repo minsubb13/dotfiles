@@ -1,6 +1,6 @@
 # ~/dev Workflow Charter
 
-Applies to every project under `~/dev/`. Auto-loaded by Claude Code's ancestor walking when cwd is `~/dev/<project>/` or deeper. This file is the **primary workflow source**; global code-style rules live in `~/.claude/CLAUDE.md` and hook registrations live in `~/.claude/settings.json`. Memory holds only personal profile and platform-specific quirks.
+Applies to every project under `~/dev/`. Auto-loaded by Claude Code's ancestor walking when cwd is `~/dev/<project>/` or deeper. This file is the **primary workflow source**; global code-style rules, user profile, and communication style live in `~/.claude/CLAUDE.md`; hook registrations live in `~/.claude/settings.json`. Auto-memory is keyed to the session cwd (no ancestor walking), so each project's memory holds only facts specific to that project.
 
 ## 0. Collaboration mode
 
@@ -44,7 +44,7 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 ### Ship
 - `superpowers:verification-before-completion`.
 - `superpowers:finishing-a-development-branch`.
-- Work log: `docs/work-logs/chunk{N}-task{N}-{description}.md` (project scope).
+- Work log: `docs/work-logs/YYYY-MM-DD-{description}.md` (project scope).
 - Session-end log (see §4).
 
 ## 3. advisor / Codex / reviewer role matrix
@@ -53,11 +53,11 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 |---|---|---|---|---|---|
 | advisor ① | After Plan write, before Plan freeze | — | ✓ | ✓ | "Does the plan solve the stated goal?" |
 | advisor ② | After final reviewer, before Codex QA | — | ✓ | ✓ | "Does implementation match intent?" |
-| Codex QA | After advisor ② | — | ✓ | ✓ | SECURITY / HIDDEN_ASSUMPTION / ARCHITECTURE / BLIND_SPOT only |
+| Codex QA | After advisor ① (plan) and after advisor ② (impl) | — | ✓ | ✓ | SECURITY / HIDDEN_ASSUMPTION / ARCHITECTURE / BLIND_SPOT only |
 
 **Codex role boundary (stated in prompt):** The four prior reviewers already covered spec compliance, style, merge readiness, and intent alignment. Codex focuses only on what they miss.
 
-**Codex re-review cap:** 1 (so ≤2 total Codex calls per feature). After that, escalate to user — recurring findings are the class Claude cannot fix alone.
+**Codex re-review cap:** 1 per QA checkpoint. After that, escalate to user — recurring findings are the class Claude cannot fix alone.
 
 **Skip notice:** When skipping any checkpoint for small scale, emit one line:
 > "Skipping advisor ② for small scale."
@@ -90,6 +90,8 @@ Trivial sessions: skip silently. Trivial = (code change 0) AND (advisor 0) AND (
 
 **Principle:** Hooks block or log only. Never modify, never call LLMs.
 
+**Boundary interpretation (user adjudication 2026-05-18):** continuation of the same mission/session (e.g. auto-resume across a quota window) is not LLM chaining; chaining means a hook triggering a *new* LLM task.
+
 ## 6. Re-evaluation trigger (Guard G)
 
 **Trigger:** 20 Codex QA calls accumulated in `~/.claude/projects/-home-remote3-dev/workflow-metrics/codex-calls.log`. Check via `wc -l` on that file; fire when ≥20. Reaching 20 is **organic accumulation**, not an alarm — if months pass without reaching it, that is a signal the workflow is light enough that meta-review is not urgent.
@@ -97,7 +99,7 @@ Trivial sessions: skip silently. Trivial = (code change 0) AND (advisor 0) AND (
 On fire:
 - Read session-log entries accumulated since last re-evaluation.
 - Audit per-guard metrics (call count, finding validity rate, skip distribution).
-- Delete any guard showing no value across 3 consecutive cycles (throwaway principle).
+- Dormant guards: surface keep-vs-retire to the user with removal as the recommended default — don't mechanically wait out 3 cycles when an existing rule (§0–§5) already covers it (2026-06-02 decision).
 - Tune thresholds as needed.
 - Document the re-evaluation at `~/.claude/projects/-home-remote3-dev/workflow-metrics/review-YYYY-MM-DD.md`.
 - Archive codex-calls.log as `codex-calls.YYYY-MM-DD.log.archive` and create an empty new log.
