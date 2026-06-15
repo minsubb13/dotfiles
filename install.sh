@@ -76,66 +76,15 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
     git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 fi
 
-# Symlink dotfiles
-echo "Creating symlinks for dotfiles..."
+# Copy dotfiles into place (plain copies, not symlinks)
+echo "Copying dotfiles..."
 
-ln -sfv "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
-ln -sfv "$DOTFILES_DIR/vimrc" "$HOME/.vimrc"
-ln -sfv "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
-ln -sfv "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
-ln -sfv "$DOTFILES_DIR/gitignore" "$HOME/.gitignore"
-ln -sfv "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf"
-
-# ------------------------------------------------------------------------------
-# 3. Claude Code Configuration
-# ------------------------------------------------------------------------------
-
-echo ""
-echo "Setting up Claude Code dotfiles..."
-
-CLAUDE_DIR="$HOME/.claude"
-mkdir -p "$CLAUDE_DIR/plugins/claude-hud"
-
-# Detect runtime for templates
-NODE_PATH=$(command -v node 2>/dev/null || echo "")
-BUN_PATH=$(command -v bun 2>/dev/null || echo "")
-RUNTIME="${BUN_PATH:-$NODE_PATH}"
-NPX_PATH=""
-if [ -n "$NODE_PATH" ]; then
-    NPX_PATH="$(dirname "$NODE_PATH")/npx"
-fi
-
-# Generate settings.json from template (machine-specific paths)
-if [ -f "$DOTFILES_DIR/claude/settings.json.template" ]; then
-    sed -e "s|\\\$RUNTIME|${RUNTIME}|g" \
-        -e "s|\\\$HOME|$HOME|g" \
-        "$DOTFILES_DIR/claude/settings.json.template" > "$CLAUDE_DIR/settings.json"
-    echo "  Generated settings.json"
-fi
-
-# Generate .mcp.json from template (machine-specific paths + secrets)
-if [ -f "$DOTFILES_DIR/claude/mcp.json.template" ]; then
-    NOTION_TOKEN="${NOTION_TOKEN:-\$NOTION_TOKEN}"
-    sed -e "s|\\\$HOME|$HOME|g" \
-        -e "s|\\\$NPX|${NPX_PATH}|g" \
-        -e "s|\\\$NODE|${NODE_PATH}|g" \
-        -e "s|\\\$NOTION_TOKEN|${NOTION_TOKEN}|g" \
-        "$DOTFILES_DIR/claude/mcp.json.template" > "$HOME/.mcp.json"
-    echo "  Generated ~/.mcp.json"
-fi
-
-# Symlink portable configs
-ln -sfv "$DOTFILES_DIR/claude/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
-ln -sfv "$DOTFILES_DIR/claude/settings.local.json" "$CLAUDE_DIR/settings.local.json"
-ln -sfv "$DOTFILES_DIR/claude/agents" "$CLAUDE_DIR/agents"
-ln -sfv "$DOTFILES_DIR/claude/skills" "$CLAUDE_DIR/skills"
-ln -sfv "$DOTFILES_DIR/claude/plugins/claude-hud/config.json" "$CLAUDE_DIR/plugins/claude-hud/config.json"
-
-echo "Claude Code setup done."
-if [ -z "$RUNTIME" ]; then
-    echo "  Warning: node/bun not found - statusLine won't work until installed."
-fi
-echo "  Run 'claude login' to authenticate on this machine."
+# rm first so an existing symlink is replaced by a real file instead of
+# being followed (which would overwrite the repo source).
+for f in zshrc vimrc p10k.zsh gitconfig gitignore tmux.conf; do
+    rm -f "$HOME/.$f"
+    cp "$DOTFILES_DIR/$f" "$HOME/.$f"
+done
 
 echo ""
 echo "Setup complete! Please restart your terminal."
