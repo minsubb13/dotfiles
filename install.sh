@@ -76,15 +76,15 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
     git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 fi
 
-# Symlink dotfiles
-echo "Creating symlinks for dotfiles..."
+# Copy dotfiles into place (plain copies, not symlinks)
+echo "Copying dotfiles..."
 
-ln -sfv "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
-ln -sfv "$DOTFILES_DIR/vimrc" "$HOME/.vimrc"
-ln -sfv "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
-ln -sfv "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
-ln -sfv "$DOTFILES_DIR/gitignore" "$HOME/.gitignore"
-ln -sfv "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf"
+# rm first so an existing symlink is replaced by a real file instead of
+# being followed (which would overwrite the repo source).
+for f in zshrc vimrc p10k.zsh gitconfig gitignore tmux.conf; do
+    rm -f "$HOME/.$f"
+    cp "$DOTFILES_DIR/$f" "$HOME/.$f"
+done
 
 echo ""
 echo "Setup complete! Please restart your terminal."
