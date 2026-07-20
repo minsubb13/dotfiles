@@ -44,7 +44,7 @@ Propose scale as a draft at **Plan draft save** (before advisor ① call). User 
 ### Ship
 - `superpowers:verification-before-completion`.
 - `superpowers:finishing-a-development-branch`.
-- Work log: `docs/work-logs/YYYY-MM-DD-{description}.md` (project scope).
+- Work log: `docs/work-logs/YYYY-MM-DD-{description}.md` (project scope). Format Goal + ADR: **Goal** (what the task should achieve — the user's intent, not the title), **Context** (prior state, constraints, what made a decision necessary), **Decision** (what was implemented, key choices and why they won over alternatives), **Consequences** (impact on existing files, follow-ups left open, tradeoffs accepted). Skip when trivial: (code change 0) OR (single commit ≤2 files & ≤10 LOC). (Moved from global CLAUDE.md 2026-07-20.)
 - Session-end log (see §4).
 
 ## 3. advisor / Codex / reviewer role matrix
