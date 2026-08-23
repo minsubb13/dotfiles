@@ -77,13 +77,13 @@ Both are optional. Zsh skips the source when the file is missing, and git ignore
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | file |
 | `claude/agents/` | `~/.claude/agents/` | directory |
 | `claude/hooks/` | `~/.claude/hooks/` | directory |
-| `claude/skills/<name>/` | `~/.claude/skills/<name>/` | one link per skill |
 
-`agents/` and `hooks/` are linked whole, so a new file dropped in either one lands in the repo without further setup. `skills/` is linked entry by entry instead, because `~/.claude/skills/` also holds links out to skills kept in other repositories, and those must stay untouched.
+`agents/` and `hooks/` are linked whole, so a new file dropped in either one lands in the repo without further setup.
 
 ### What is deliberately not tracked
 
 - `settings.json` — Claude Code and Orca rewrite it on their own, and it carries absolute paths that differ per machine. Configure it per machine and leave it out of version control.
 - `settings.local.json` — per-machine MCP enablement.
+- `skills/` — the skills on this machine are written against environments that do not travel with the repo, and the directory also holds links out to skills kept elsewhere. Keep skills wherever they belong and link them in by hand.
 - `plugins/`, `projects/`, `sessions/`, `history.jsonl` and the rest of `~/.claude` — runtime state owned by Claude Code.
 - `scripts/` — deployed and updated by plugins, not by hand.

@@ -136,21 +136,17 @@ done
 # absolute paths that differ per machine.
 #
 # agents/ and hooks/ are linked whole, so a new file there lands in the repo
-# without further setup. skills/ is linked entry by entry, because that
-# directory also holds links out to skills kept in other repositories.
+# without further setup. skills/ is left out entirely: the ones on this machine
+# are tied to environments that do not travel, and the directory also holds
+# links out to skills kept in other repositories.
 
 echo "Linking Claude Code assets..."
-mkdir -p "$HOME/.claude/skills"
+mkdir -p "$HOME/.claude"
 
 link_into_place "$DOTFILES_DIR/claude/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
 link_into_place "$DOTFILES_DIR/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 link_into_place "$DOTFILES_DIR/claude/agents"                "$HOME/.claude/agents"
 link_into_place "$DOTFILES_DIR/claude/hooks"                 "$HOME/.claude/hooks"
-
-for skill in "$DOTFILES_DIR"/claude/skills/*/; do
-    [ -d "$skill" ] || continue
-    link_into_place "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
-done
 
 echo ""
 echo "Setup complete! Please restart your terminal."
