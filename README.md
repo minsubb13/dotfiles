@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal development environment configuration for macOS and Linux.
+Personal development environment configuration for macOS and Linux, covering the shell setup and the Claude Code workflow assets.
 
 # Features
 
@@ -19,17 +19,32 @@ Before installation, ensure you have the following installed:
 
 ## Installation
 
-1. Clone this repository:
+1. Clone this repository. The clone becomes the source of truth for every file it manages, so put it somewhere permanent — moving or deleting it later breaks every link that points into it.
 
     ```bash
-    git clone https://github.com/minsubb13/dotfiles.git
-    cd dotfiles
+    git clone https://github.com/minsubb13/dotfiles.git ~/dotfiles
+    cd ~/dotfiles
     ```
-2. Run install script
+
+2. Run the install script.
 
     ```bash
     ./install.sh
     ```
+
+Rerunning the script is safe. A link already pointing at the right place is left alone, and anything real sitting at a destination is renamed to `<name>.bak.YYYYMMDD-HHMMSS` before the link replaces it.
+
+## How it works
+
+Every managed path is a symlink into this repository rather than a copy of it. Editing `~/.zshrc` therefore edits `zshrc` in the clone, and the change shows up under `git status` right away — capturing it takes nothing more than a commit and a push.
+
+```
+~/.zshrc              -> ~/dotfiles/zshrc
+~/.claude/CLAUDE.md   -> ~/dotfiles/claude/CLAUDE.md
+~/.claude/agents/     -> ~/dotfiles/claude/agents/
+```
+
+Anything that differs from machine to machine stays out of the repo, so a fresh clone behaves the same way everywhere.
 
 ## What's included
 
@@ -39,69 +54,36 @@ Before installation, ensure you have the following installed:
 - `gitignore`: Global gitignore
 - `vimrc`: Vim configuration
 - `tmux.conf`: Tmux configuration
-- `install.sh`: Automated installation script
-- `claude-snapshot/`: Claude workflow snapshot — see "Claude Workflow Snapshot" below (only present on the `claude-setting` branch)
-- `sync-claude.sh`: One-way snapshot updater (only present on the `claude-setting` branch)
+- `claude/`: Claude Code workflow assets — see below
+- `install.sh`: Installation script; creates every link
+- `docs/`: Design notes and analysis reports
 
----
+## Machine-specific settings
 
-## Claude Workflow Snapshot (branch: `claude-setting`)
+Anything tied to one machine — a toolchain path, a host-specific credential helper — belongs in one of two files the repo does not track:
 
-This branch holds a one-way snapshot of the local Claude Code workflow assets:
-`~/.claude/{CLAUDE.md, settings.json, agents/, hooks/, skills/}` and
-`~/dev/.claude/{CLAUDE.md, codex-qa-prompt.xml}`.
+- `~/.zshrc.local`, sourced by `zshrc` when present
+- `~/.gitconfig.local`, pulled in through an `[include]` directive in `gitconfig`
 
-**The dotfiles repo is a snapshot store, not a sync target.** The local install
-is never touched by anything in this branch. Symlinks are not created.
+Both are optional. Zsh skips the source when the file is missing, and git ignores an include that points at nothing.
 
-### Update the snapshot (after local workflow edits)
+## Claude Code assets
 
-```bash
-~/dotfiles/sync-claude.sh
-cd ~/dotfiles && git diff           # review
-git add -A && git commit -m "..."   # commit on claude-setting
-git push
-```
+`claude/` holds the hand-written half of the Claude Code setup, and `install.sh` links it into `~/.claude`:
 
-### Apply to a new machine
-
-1. Clone & checkout
-   ```bash
-   git clone https://github.com/minsubb13/dotfiles.git ~/dotfiles
-   cd ~/dotfiles && git checkout claude-setting
-   ```
-
-2. Ask the local Claude Code to apply the snapshot:
-
-   > Read `~/dotfiles/claude-snapshot/`. Following the "Machine-dependent
-   > fields" table in this README, substitute the machine-dependent parts
-   > of `settings.json`, `hooks/*.sh`, and `dev-claude/CLAUDE.md` to fit
-   > this machine (NVM path, username, projects hash). Apply to
-   > `~/.claude/` and `~/dev/.claude/`. Back up any existing files as
-   > `<file>.bak.YYYYMMDD`.
-
-3. Verify after Claude Code restart:
-   - SessionStart hook surfaces workflow state (Codex QA count, last session-log)
-   - statusLine renders correctly
-   - PostToolUse hook appends to `~/.claude/projects/<hash>/workflow-metrics/codex-calls.log` after a `codex:codex-rescue` Agent call
-
-### Machine-dependent fields
-
-When applying the snapshot to a new machine, these are the only fields that
-need to change. Everything else is portable.
-
-| File / JSON path | Snapshot value (example) | New-machine substitute |
+| Repo path | Linked to | Linked as |
 |---|---|---|
-| `claude/settings.json` → `statusLine.command` (node path) | `/home/remote3/.nvm/versions/node/v24.13.1/bin/node` | `command -v node` 결과 또는 `~/.nvm/versions/node/<latest>/bin/node` |
-| `claude/settings.json` → `hooks.SessionStart[0].hooks[0].command` | `/home/remote3/.claude/hooks/session-start-workflow-status.sh` | `$HOME/.claude/hooks/session-start-workflow-status.sh` |
-| `claude/settings.json` → `hooks.Stop[0].hooks[0].command` | `/home/remote3/.claude/hooks/notify-stop.sh` | `$HOME/.claude/hooks/notify-stop.sh` |
-| `claude/settings.json` → `hooks.PostToolUse[1].hooks[0].command` (hash 부분) | `~/.claude/projects/-home-remote3-dev/workflow-metrics/codex-calls.log` | 새 머신의 `~/dev` 절대경로를 hash한 디렉토리. Claude Code 컨벤션: `/`를 `-`로 치환 (예: `-home-<USERNAME>-dev`) |
-| `dev-claude/CLAUDE.md` 본문의 hash 3군데 (line 70, 93, 100 부근) | `~/.claude/projects/-home-remote3-dev/...` | 위와 동일한 새 hash로 substitute |
+| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | file |
+| `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | file |
+| `claude/agents/` | `~/.claude/agents/` | directory |
+| `claude/hooks/` | `~/.claude/hooks/` | directory |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/` | one link per skill |
 
-### What is intentionally NOT in the snapshot
+`agents/` and `hooks/` are linked whole, so a new file dropped in either one lands in the repo without further setup. `skills/` is linked entry by entry instead, because `~/.claude/skills/` also holds links out to skills kept in other repositories, and those must stay untouched.
 
-- `~/.claude/projects/<hash>/memory/` — auto memory. Conflict risk in two-machine setups.
-- `~/.claude/projects/<hash>/workflow-metrics/` — per-machine accumulation.
-- `~/dev/<project>/CLAUDE.md` — already lives in each project's git repo.
-- `~/.claude/settings.local.json`, `~/dev/.claude/settings.local.json` — machine-specific MCP enablement.
-- Symlinks. The local install is never linked to this repo.
+### What is deliberately not tracked
+
+- `settings.json` — Claude Code and Orca rewrite it on their own, and it carries absolute paths that differ per machine. Configure it per machine and leave it out of version control.
+- `settings.local.json` — per-machine MCP enablement.
+- `plugins/`, `projects/`, `sessions/`, `history.jsonl` and the rest of `~/.claude` — runtime state owned by Claude Code.
+- `scripts/` — deployed and updated by plugins, not by hand.
