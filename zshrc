@@ -75,6 +75,7 @@ fi
 
 alias home='cd $HOME'
 alias cld='claude --dangerously-skip-permissions'
+alias llmupdate='claude update && npm install -g @openai/codex'
 
 # ------------------------------------------------------------------------------
 # Machine-local settings: source ~/.zshrc.local if it exists
@@ -83,7 +84,7 @@ alias cld='claude --dangerously-skip-permissions'
 
 
 # bun completions
-[ -s "/home/remote3/.bun/_bun" ] && source "/home/remote3/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
