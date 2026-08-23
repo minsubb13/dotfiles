@@ -1,0 +1,119 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_GLOB_NO_IGNORE": "false",
+    "BASH_MAX_OUTPUT_LENGTH": "60000"
+  },
+  "includeGitInstructions": false,
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git diff)",
+      "Bash(git log *)",
+      "Bash(git log)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git remote -v)",
+      "Bash(ls *)",
+      "Bash(ls)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(stat *)",
+      "Bash(file *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)"
+    ]
+  },
+  "model": "claude-fable-5[1m]",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/remote3/.claude/hooks/session-start-workflow-status.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c 'if ((.tool_input.file_path // \"\") | test(\"^/home/remote3/dev(/.*)?/plans/[^/]+\\\\.md$\")) then {hookSpecificOutput: {hookEventName: \"PostToolUse\", additionalContext: \"Plan file written. Per ~/dev/.claude/CLAUDE.md §2 Plan stage: propose scale → user confirms → advisor ① (medium/large) → Codex QA on plan via codex:codex-rescue subagent (template: ~/dev/.claude/codex-qa-prompt.xml) → user approves → freeze.\"}} else empty end' 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r 'if (.tool_input.subagent_type // \"\") == \"codex:codex-rescue\" then .tool_input.subagent_type else empty end' 2>/dev/null | while read -r kind; do mkdir -p ~/.claude/projects/-home-remote3-dev/workflow-metrics && echo \"$(date +%Y-%m-%dT%H:%M:%S) | $(basename \"$PWD\") | ${kind}\" >> ~/.claude/projects/-home-remote3-dev/workflow-metrics/codex-calls.log; done; true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/remote3/.claude/hooks/notify-stop.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c '\"/home/remote3/.nvm/versions/node/v24.13.1/bin/node\" \"$(ls -td ~/.claude/plugins/cache/claude-hud/claude-hud/*/ 2>/dev/null | head -1)dist/index.js\"'"
+  },
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "claude-hud@claude-hud": true,
+    "superpowers@claude-plugins-official": true,
+    "codex@openai-codex": true,
+    "security-guidance@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    },
+    "dryforge": {
+      "source": {
+        "source": "github",
+        "repo": "fn-opt/dryforge"
+      }
+    }
+  },
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "switchModelsOnFlag": false,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
+}

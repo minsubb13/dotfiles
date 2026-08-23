@@ -1,0 +1,61 @@
+<!--
+  Codex QA prompt template for Phase N.5 review.
+  Invocation: codex:codex-rescue subagent, task mode, no --write (read-only).
+  Guard A: call only when scale is medium or large.
+  Guard D: re-review capped at 1.
+  Replace {BRANCH_OR_DIFF_REF} before sending.
+-->
+
+<task>
+Review scope: {BRANCH_OR_DIFF_REF}
+
+This change has already been reviewed by Claude for:
+(1) Spec compliance — superpowers spec reviewer
+(2) Style, readability, test quality — superpowers quality reviewer
+(3) Integration sanity, merge readiness — superpowers final reviewer
+(4) User intent alignment — advisor checkpoint ②
+
+You focus only on what the four reviewers above are likely to miss:
+- Security vulnerabilities (input validation, auth/session, crypto misuse, injection, etc.)
+- Hidden assumptions and implicit contracts (invariants, race conditions, null/boundary cases)
+- Architectural trade-offs (scalability, coupling, separation of concerns violations)
+- Blind spots from a different model's perspective (patterns Claude tends to miss structurally)
+</task>
+
+<grounding_rules>
+- Support every finding with file, line, and a code snippet.
+- Mark speculative observations as such ("Suspected: ...").
+- Do not repeat concerns already covered by the four prior reviewers (spec compliance, style, merge readiness, user intent).
+</grounding_rules>
+
+<structured_output_contract>
+Respond using exactly this format.
+
+## Findings
+For each item:
+- **[CATEGORY]** {file}:{line} — {one-line summary}
+  - Evidence: {code snippet or reference}
+  - Severity: high / medium / low
+  - Recommended action: {concrete fix direction}
+
+CATEGORY: SECURITY / HIDDEN_ASSUMPTION / ARCHITECTURE / BLIND_SPOT
+
+## Verdict
+- APPROVED — no blocking issues
+- APPROVED_WITH_NOTES — fixes recommended but not blocking
+- BLOCKED — must resolve before merge
+
+If there is nothing to report, start with "## Findings (none)" and end with APPROVED.
+</structured_output_contract>
+
+<dig_deeper_nudge>
+Do not stop at surface-level observations. Actively probe for patterns Claude tends to miss:
+- Security issues hiding behind logical correctness
+- Edge cases behind the happy path
+- State combinations outside test coverage
+</dig_deeper_nudge>
+
+<default_follow_through_policy>
+If information is missing, state a hypothesis and continue rather than asking routing questions.
+Leave "Uncertain: need to verify X" notes and complete the review anyway.
+</default_follow_through_policy>
