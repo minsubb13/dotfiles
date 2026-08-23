@@ -84,11 +84,16 @@ fi
 # $DOTFILES_DIR, so editing the live file edits the repo and `git status`
 # picks the change up straight away.
 #
-# Anything already sitting at the destination is preserved. A real file or
-# directory is renamed with a timestamped suffix; a symlink already pointing
-# at the right place is left alone; a symlink pointing elsewhere is replaced.
+# Anything already sitting at a destination is preserved, never clobbered. A
+# real file or directory is moved under ~/.dotfiles-backup/<timestamp>/ with
+# its path kept intact; a symlink already pointing at the right place is left
+# alone; a symlink pointing elsewhere is replaced.
+#
+# The backup deliberately lands outside ~/.claude. Claude Code scans that tree
+# for skills and agents, so a saved copy left beside the original would be
+# read back in as a duplicate.
 
-BACKUP_SUFFIX=".bak.$(date +%Y%m%d-%H%M%S)"
+BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 link_into_place() {
     local src="$1"
@@ -106,8 +111,10 @@ link_into_place() {
         fi
         rm -f "$dst"
     elif [ -e "$dst" ]; then
-        mv "$dst" "$dst$BACKUP_SUFFIX"
-        echo "  saved $dst -> $(basename "$dst")$BACKUP_SUFFIX"
+        local backup="$BACKUP_DIR/${dst#"$HOME"/}"
+        mkdir -p "$(dirname "$backup")"
+        mv "$dst" "$backup"
+        echo "  saved $dst -> $backup"
     fi
 
     ln -s "$src" "$dst"

@@ -32,7 +32,7 @@ Before installation, ensure you have the following installed:
     ./install.sh
     ```
 
-Rerunning the script is safe. A link already pointing at the right place is left alone, and anything real sitting at a destination is renamed to `<name>.bak.YYYYMMDD-HHMMSS` before the link replaces it.
+Rerunning the script is safe. A link already pointing at the right place is left alone, and anything real sitting at a destination is moved under `~/.dotfiles-backup/<timestamp>/`, path intact, before the link takes its place. Backups land there rather than beside the original because Claude Code scans `~/.claude` for skills and agents and would otherwise read a saved copy back in as a duplicate.
 
 ## How it works
 
