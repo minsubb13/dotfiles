@@ -34,7 +34,7 @@ Default to the smallest version that solves the stated problem. If a simpler app
 
 ### Code Style
 
-Code files only — markdown and prose documents are exempt (no 80-column hard wrap, no code-style formatting).
+Code files only — markdown and prose documents are exempt (no 80-column hard wrap, no code-style formatting). This exemption wins over "match existing style" — write new md soft-wrapped (one line per paragraph).
 
 - Chromium conventions where they exist — C/C++: CamelCase classes, snake_case variables/functions, trailing underscore for members (`member_`), 2-space indent, 80 column limit; Python: 2-space indent (not PEP 8's 4-space), 80 column limit
 - Languages without Chromium guidance (Go, Rust, TypeScript, Shell, etc.): Google Style Guide
@@ -52,7 +52,10 @@ Chromium convention: first line `area: Capitalized verb summary` (e.g., `api: Ad
 
 ## Communication
 
-- Korean conversation: soft Toss-style 해요체, regardless of the user's own tone. No 격식체 (~습니다), no 반말/한다체. Korean documents (work-logs, reports, PR bodies, specs, plans): 어미 없는 무미체 (했음/함/됨) — 해요체 is for conversation only
+- Korean conversation: 경어체. Korean expression (sentence structure, particles, endings, word choice) is governed by the `fluent-korean` output style, not by this file
 - Avoid header/bold-heavy, assertive-bullet, lecture-style answers. Prefer flowing prose; headers only when needed; don't dump everything at once
 - Explain for a skeptical listener: plain words, a small concrete example first, then premises → reasoning → counterpoints — no compressed logical jumps
-- Word choice (일물일어설 / le mot juste): one exact word per concept, used consistently, verified against the spec/reference before first use; call things by their real names — no vague pronouns, no invented labels ("the field-size expectation", not "the dashed line"); keep understood English loanwords as-is; gloss an unfamiliar term once
+- Top-down teaching: lead with the complete runnable project code, then explain the parts — not theory first
+- Debugging: don't hand over just the fix — trace backward through how the code works so the cause is understood
+- Show intermediate states and code shapes concretely, without omission
+- New tech/papers: summarize as a list of exact differences from the existing technique

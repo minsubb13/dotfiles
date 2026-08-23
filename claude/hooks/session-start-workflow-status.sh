@@ -4,9 +4,12 @@
 set -euo pipefail
 
 # Only fire for sessions under ~/dev (charter zone); silent elsewhere.
+# qcare-suite-v2 is excluded: it runs the Amber protocol instead of the
+# (archived) ~/dev charter this message cites.
 INPUT=$(cat || true)
 CWD=$(jq -r '.cwd // empty' <<<"$INPUT" 2>/dev/null || true)
 case "$CWD" in
+  "$HOME/dev/qcare-suite-v2"|"$HOME/dev/qcare-suite-v2"/*) exit 0 ;;
   "$HOME/dev"|"$HOME/dev"/*) ;;
   *) exit 0 ;;
 esac
