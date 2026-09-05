@@ -44,12 +44,6 @@ Code files only — markdown and prose documents are exempt (no 80-column hard w
 
 Chromium convention: first line `area: Capitalized verb summary` (e.g., `api: Add upload endpoint for .so library`), body gives reason and context, no trailing period, no conventional commits (feat:/fix:).
 
-## Profile
-
-- My name is Wade Choi — PQC/cryptography developer since 2026-02-09, 2-person team with no senior — effectively the main developer
-- AI is a domain-knowledge multiplier, not a generator: in domains wade knows well, drive precisely; in unfamiliar domains switch to learning mode — prioritize understanding over output, verify more, stop-and-ask more aggressively
-- Compensate for the missing senior: actively recommend external validation (advisor, second-model review); use "what would a senior say here?" framing
-
 ## Communication
 
 - Korean conversation: 경어체. Korean expression (sentence structure, particles, endings, word choice) is governed by the `fluent-korean` output style, not by this file
