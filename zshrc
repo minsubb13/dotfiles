@@ -77,6 +77,15 @@ alias home='cd $HOME'
 alias cld='claude --dangerously-skip-permissions'
 alias llmupdate='claude update && npm install -g @openai/codex'
 
+# `orca update` runs ~/.local/bin/orca-update; everything else goes to orca.
+orca() {
+  if [[ $1 == update ]]; then
+    shift; orca-update "$@"
+  else
+    command orca "$@"
+  fi
+}
+
 # ------------------------------------------------------------------------------
 # Machine-local settings: source ~/.zshrc.local if it exists
 # ------------------------------------------------------------------------------

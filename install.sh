@@ -126,6 +126,14 @@ for f in zshrc vimrc p10k.zsh gitconfig gitignore tmux.conf; do
     link_into_place "$DOTFILES_DIR/$f" "$HOME/.$f"
 done
 
+# ~/.local/bin holds plenty that is not ours, so each script is linked on its
+# own rather than linking the directory whole.
+echo "Linking scripts..."
+mkdir -p "$HOME/.local/bin"
+for f in "$DOTFILES_DIR"/bin/*; do
+    link_into_place "$f" "$HOME/.local/bin/$(basename "$f")"
+done
+
 # ------------------------------------------------------------------------------
 # 4. Link Claude Code workflow assets
 # ------------------------------------------------------------------------------

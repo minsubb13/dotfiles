@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Updates the headless Orca server (systemd user unit orca-serve) to the
+# latest GitHub release: download, verify sha256 against the release digest,
+# replace ~/opt/orca/orca.AppImage, then restart the service.
+
+set -euo pipefail
+
+readonly APPIMAGE="${HOME}/opt/orca/orca.AppImage"
+readonly API_URL="https://api.github.com/repos/stablyai/orca/releases/latest"
+readonly SERVICE="orca-serve"
+
+case "$(uname -m)" in
+  x86_64) asset_name="orca-linux.AppImage" ;;
+  aarch64) asset_name="orca-linux-arm64.AppImage" ;;
+  *) echo "orca-update: unsupported arch $(uname -m)" >&2; exit 1 ;;
+esac
+
+release_json="$(curl -fsSL "${API_URL}")"
+read -r latest_tag digest download_url < <(
+  python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+a = next(a for a in d["assets"] if a["name"] == sys.argv[1])
+print(d["tag_name"], a["digest"].removeprefix("sha256:"),
+      a["browser_download_url"])
+' "${asset_name}" <<< "${release_json}")
+latest="${latest_tag#v}"
+current="$("${APPIMAGE}" --version 2>/dev/null || echo none)"
+
+echo "current: ${current}"
+echo "latest:  ${latest}"
+if [[ "${current}" == "${latest}" ]]; then
+  echo "Already up to date."
+  exit 0
+fi
+
+if grep -q "${SERVICE}.service" /proc/self/cgroup; then
+  echo "Warning: this shell runs inside an Orca terminal; restarting" \
+    "${SERVICE} may interrupt it."
+  read -r -p "Continue? [y/N] " answer
+  [[ "${answer}" == [yY] ]] || exit 1
+fi
+
+# Download next to the target so the final mv is an atomic rename.
+tmp="$(mktemp "${APPIMAGE}.XXXXXX")"
+trap 'rm -f "${tmp}"' EXIT
+
+echo "Downloading ${latest_tag}..."
+curl -fSL --progress-bar -o "${tmp}" "${download_url}"
+
+actual="$(sha256sum "${tmp}" | cut -d' ' -f1)"
+if [[ "${actual}" != "${digest}" ]]; then
+  echo "orca-update: sha256 mismatch" >&2
+  echo "  expected ${digest}" >&2
+  echo "  actual   ${actual}" >&2
+  exit 1
+fi
+echo "sha256 OK"
+
+chmod +x "${tmp}"
+downloaded="$("${tmp}" --version)"
+if [[ "${downloaded}" != "${latest}" ]]; then
+  echo "orca-update: downloaded file reports ${downloaded}," \
+    "expected ${latest}" >&2
+  exit 1
+fi
+
+mv "${tmp}" "${APPIMAGE}"
+trap - EXIT
+
+echo "Restarting ${SERVICE}..."
+systemctl --user restart "${SERVICE}"
+for _ in $(seq 30); do
+  systemctl --user is-active --quiet "${SERVICE}" && break
+  sleep 1
+done
+systemctl --user is-active "${SERVICE}"
+echo "Updated: ${current} -> $("${APPIMAGE}" --version)"

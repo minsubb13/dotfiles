@@ -54,6 +54,7 @@ Anything that differs from machine to machine stays out of the repo, so a fresh 
 - `gitignore`: Global gitignore
 - `vimrc`: Vim configuration
 - `tmux.conf`: Tmux configuration
+- `bin/`: Scripts linked one by one into `~/.local/bin`. `orca-update` (run as `orca update`) updates a headless Orca server and only works on a machine that has `~/opt/orca/orca.AppImage` and the `orca-serve` systemd user unit
 - `claude/`: Claude Code workflow assets — see below
 - `install.sh`: Installation script; creates every link
 - `docs/`: Design notes and analysis reports
